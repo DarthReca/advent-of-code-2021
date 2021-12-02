@@ -1,4 +1,4 @@
-module Main where
+module Day1.Main where
 parseFile :: IO [Integer]
 parseFile = do
     contents <- readFile "input.txt"
