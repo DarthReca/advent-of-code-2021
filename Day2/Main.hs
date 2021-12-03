@@ -22,14 +22,11 @@ directionToTupleWithAim tup
     | otherwise = (0, toInt, 0)
     where toInt = read $ tup !! 1 :: Int
 
-applyAim :: Int -> (Int, Int, Int) -> (Int, Int, Int)
-applyAim aim tup = (0,0,0)
-
 main :: IO ()
 main = do
     fileWords <- parseFile
     let res = foldl1 (\a b -> bimap (fst a +) (snd a +) b) $ map directionToTuple fileWords
     print $ uncurry (*) res
 
-    let res2 = foldl1 (\a b -> (a !! 0 + b !! 0)) $ map directionToTupleWithAim fileWords
-    print ""
+    let res2 = foldl1 (\(x,y,z) (a,b,c) -> (x + z*b, y+b, z+c)) $ map directionToTupleWithAim fileWords
+    print $ (\(a,b,c) -> a * b) res2
