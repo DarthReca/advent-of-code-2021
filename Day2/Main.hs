@@ -27,6 +27,6 @@ main = do
     fileWords <- parseFile
     let res = foldl1 (\a b -> bimap (fst a +) (snd a +) b) $ map directionToTuple fileWords
     print $ uncurry (*) res
-
+    -- Part 2
     let res2 = foldl1 (\(x,y,z) (a,b,c) -> (x + z*b, y+b, z+c)) $ map directionToTupleWithAim fileWords
     print $ (\(a,b,c) -> a * b) res2

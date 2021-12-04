@@ -18,4 +18,6 @@ threeSlidingSum depths = map (\(x,y,z) -> x + y + z) $ zip3 depths depths1 depth
 main :: IO ()
 main = do 
     depths <- parseFile
+    print $ twoSlidingWindow depths
+    -- Part 2
     print . twoSlidingWindow $ threeSlidingSum depths 
