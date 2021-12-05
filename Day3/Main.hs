@@ -1,45 +1,45 @@
 module Day3.Main where
 
-import Data.Char
-import Data.List
+import Data.Char (digitToInt)
+import Data.List (delete, transpose)
 
 parseFile :: IO [String]
 parseFile = do
-    contents <- readFile "input.txt"
-    let fileWords = map (takeWhile (\x -> x /= '\r')) $ lines contents
-    return fileWords
+  contents <- readFile "input.txt"
+  let fileWords = map (takeWhile (/= '\r')) $ lines contents
+  return fileWords
 
 groupByPosition :: [String] -> [[Int]]
-groupByPosition fileLines = transpose $ map (\x -> lineToInts x) fileLines
-  where lineToInts line = map digitToInt line
+groupByPosition fileLines = transpose $ map lineToInts fileLines
+  where
+    lineToInts = map digitToInt
 
 countOccurences :: [Int] -> (Int, Int)
-countOccurences list = foldl (increase) (0,0) list
-  where 
+countOccurences = foldl increase (0, 0)
+  where
     increase x 1 = (fst x, snd x + 1)
     increase x 0 = (fst x + 1, snd x)
+    increase x n = (0, 0)
 
-tupleToEpsilonBit :: (Int, Int) -> Int
-tupleToEpsilonBit tup
-  | fst tup > snd tup = 0
+tupleToBit :: (Int, Int) -> (Int -> Int -> Bool) -> Int
+tupleToBit tup op
+  | uncurry op tup = 0
   | otherwise = 1
 
-tupleToGammaBit :: (Int, Int) -> Int
-tupleToGammaBit tup
-  | fst tup < snd tup = 0
-  | otherwise = 1
+selectBitSequence :: ([String], Int) -> (Int -> Int -> Bool) -> ([String], Int)
+selectBitSequence x op = until (\x -> length (fst x) == 1) (\x -> (uncurry keep x . selectBit . countList $ fst x, snd x + 1)) x
+  where
+    countList = map countOccurences . groupByPosition
+    selectBit = map (`tupleToBit` op)
+    keep lin pos bit = filter (\x -> x !! pos == head (show (bit !! pos))) lin
 
-binToDec :: Int -> Int
-binToDec 0 = 0
-binToDec i = 2 * binToDec (div i 10) + (mod i 10)
-
-listToInt :: [Int] -> Int
-listToInt i = read $ concatMap show i 
-
+main :: IO ()
 main = do
   lin <- parseFile
   let bitCount = map countOccurences $ groupByPosition lin
-  let gamma = binToDec. listToInt $ map tupleToGammaBit bitCount
-  let epsilon = binToDec . listToInt $ map tupleToEpsilonBit bitCount
-  print $ gamma * epsilon
-
+  let gamma = concatMap (\x -> show $ tupleToBit x (<=)) bitCount
+  let epsilon = concatMap (\x -> show $ tupleToBit x (>)) bitCount
+  print $ "Gamma: " ++ show gamma ++ " Epsilon: " ++ show epsilon
+  -- Part 2
+  print $ selectBitSequence (lin, 0) (>) -- 3399
+  print $ selectBitSequence (lin, 0) (<=) -- 1249
