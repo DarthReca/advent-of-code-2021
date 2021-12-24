@@ -13,6 +13,7 @@ parseFile = do
 listToTuple :: [a] -> (a, a)
 listToTuple [a, b] = (a, b)
 
+main :: IO ()
 main = do
   contents <- parseFile
   let mapped = Map.fromListWith (+)
