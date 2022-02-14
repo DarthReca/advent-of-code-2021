@@ -82,7 +82,7 @@ main = do
   let startVertex  = S.findIndex (T.pack "start") nodes
   let endVertex    = S.findIndex (T.pack "end") nodes
   let visitCounter = Seq.update startVertex 1 $ Seq.replicate (length nodes) 0
-  -- print $ allPathFromTo nodes graph startVertex endVertex visitCounter
+  print $ allPathFromTo nodes graph startVertex endVertex visitCounter
   -- Part 2
   print $ allPathFromTo2 nodes graph startVertex endVertex visitCounter
 
