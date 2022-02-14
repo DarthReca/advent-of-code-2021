@@ -11,11 +11,11 @@
 
 ## About
 
-> This project is a set of program to solve the differents tasks of [Advent of Code 2021](https://adventofcode.com/2021).
+This project is a set of program to solve the differents tasks of [Advent of Code 2021](https://adventofcode.com/2021).
 
 ### Built With
 
-> Programs are written in Haskell or Golang. The choice is based on the task.
+Programs are written in Haskell or Golang. The choice is based on the task.
 
 ## Authors & contributors
 
