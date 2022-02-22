@@ -89,5 +89,5 @@ func main() {
 	fmt.Println("Minimum cost:", dist)
 	extGraph := ExtendGraph(virt, size, costs)
 	_, dist = graph.ShortestPath(extGraph, 0, extGraph.Order()-1)
-	fmt.Println("\nMinimum cost:", dist)
+	fmt.Println("Minimum cost:", dist)
 }
