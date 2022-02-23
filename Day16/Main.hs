@@ -61,25 +61,30 @@ parseLiteral packet =
     $ drop 6 packet
 
 
-parseOperator :: String -> [Int]
-parseOperator packet = parseSubpacket subpackets
+parseOperator packet = parseSubpacket packet
  where
   lengthIdLenght | length packet < 7  = 0
                  | packet !! 6 == '0' = 15
                  | otherwise          = 11
   lengthValue         = binToDec . take lengthIdLenght $ drop 7 packet
-  packetWithoutHeader = drop (7 + lengthIdLenght) packet
-  subpackets | lengthIdLenght == 15 = take lengthValue packetWithoutHeader
-             | lengthIdLenght == 11 = packetWithoutHeader
-             | otherwise            = ""
+  packetWithoutHeader = drop (7 + lengthIdLenght)
+  subpackets p
+    | lengthIdLenght == 15 = take lengthValue $ packetWithoutHeader p
+    | lengthIdLenght == 11 = packetWithoutHeader p
+    | otherwise            = ""
+  lengthOfLiteral lit = 6 + fst (parseLiteral lit)
   parseSubpacket sub
-    | null sub = trace "End" []
-    | snd (versionId sub) == 4 = trace ("Literal:" ++ sub) fst (versionId sub)
-    : parseSubpacket (drop (7 + fst (parseLiteral sub)) sub)
-    | otherwise = trace ("Operator: " ++ sub) fst (versionId sub)
-    : parseOperator sub
+    | null sub || length packet < 6 = trace "End" ([], "")
+    | snd (versionId sub) == 4 = trace
+      ("Literal : " ++ packet)
+      ([fst (versionId sub)], drop (lengthOfLiteral sub) sub)
+    | otherwise = trace
+      ("Operator: " ++ packet)
+      until
+      (null . snd)
+      (\x -> Data.Bifunctor.first (fst x ++) (parseOperator $ snd x))
+      ([fst (versionId sub)], subpackets packet)
 
 main = do
   number <- parseFile
-  print number
-  print $ fst (versionId number) : parseOperator number
+  print $ fst (parseOperator number)
