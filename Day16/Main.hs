@@ -44,8 +44,9 @@ versionId bitString =
     6
     bitString
 
+parseFile :: IO [Char]
 parseFile = do
-  contents <- readFile "input1.txt"
+  contents <- readFile "input.txt"
   let converted = concatMap hexToBin contents
   return converted
 
@@ -53,7 +54,7 @@ parseLiteral :: String -> (Int, Int)
 parseLiteral packet =
   (\x -> (length x, binToDec x))
     . concatMap (T.unpack . T.tail)
-    -- . filter (\x -> T.length x == 5)
+    . filter (\x -> T.length x == 5)
     . (\(a, b) -> a ++ [head b])
     . span (\x -> T.head x == '1')
     . T.chunksOf 5
@@ -61,6 +62,7 @@ parseLiteral packet =
     $ drop 6 packet
 
 
+parseOperator :: String -> ([Int], String)
 parseOperator packet = parseSubpacket packet
  where
   lengthIdLenght | length packet < 7  = 0
@@ -68,13 +70,10 @@ parseOperator packet = parseSubpacket packet
                  | otherwise          = 11
   lengthValue         = binToDec . take lengthIdLenght $ drop 7 packet
   packetWithoutHeader = drop (7 + lengthIdLenght)
-  subpackets p
-    | lengthIdLenght == 15 = take lengthValue $ packetWithoutHeader p
-    | lengthIdLenght == 11 = packetWithoutHeader p
-    | otherwise            = ""
-  lengthOfLiteral lit = 6 + fst (parseLiteral lit)
+  lengthOfLiteral lit = 7 + fst (parseLiteral lit)
   parseSubpacket sub
-    | null sub || length packet < 6 = trace "End" ([], "")
+    | null sub || length packet < 6 || all (== '0') packet = trace "End"
+                                                                   ([], "")
     | snd (versionId sub) == 4 = trace
       ("Literal : " ++ packet)
       ([fst (versionId sub)], drop (lengthOfLiteral sub) sub)
@@ -83,8 +82,8 @@ parseOperator packet = parseSubpacket packet
       until
       (null . snd)
       (\x -> Data.Bifunctor.first (fst x ++) (parseOperator $ snd x))
-      ([fst (versionId sub)], subpackets packet)
+      ([fst (versionId sub)], packetWithoutHeader packet)
 
 main = do
   number <- parseFile
-  print $ fst (parseOperator number)
+  print . sum $ fst (parseOperator number)
