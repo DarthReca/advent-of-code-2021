@@ -11,7 +11,7 @@
 
 ## About
 
-This project is a set of program to solve the differents tasks of [Advent of Code 2021](https://adventofcode.com/2021).
+This project is a set of program to solve the differents tasks of [Advent of Code 2021](https://adventofcode.com/2021). **WIP**
 
 ### Built With
 
@@ -19,7 +19,7 @@ Programs are written in Haskell or Golang. The choice is based on the task.
 
 ## Authors & contributors
 
-The original setup of this repository is by [Daniele Rege Cambrin](https://gitlab.com/DarthReca).
+The original setup of this repository is by [Daniele Rege Cambrin](https://github.com/darthreca).
 
 ## License
 
